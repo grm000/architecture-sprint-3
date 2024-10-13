@@ -1,0 +1,84 @@
+@startuml
+!theme cerulean-outline
+title \n= ER-диаграмма smart-home\n
+
+entity "User" as User {
+    + Id : Guid
+    + Name : string
+    + Email : string
+    + CreatedAt : DateTime
+    + UpadatedAt : DateTime
+}
+
+entity "Device" as Device {
+    + Id : Guid
+    + SerialNo : Guid
+    + Status : bool
+    + HouseId : Guid?
+    + DeviceTypeId : int?
+    + CreatedAt : DateTime
+    + UpadatedAt : DateTime
+}
+
+entity "DeviceType" as DeviceType {
+    + Id : int
+    + Name : string
+}
+
+entity "House" as House {
+    + Id : Guid
+    + Name : string
+    + Address : string?
+    + City : string?
+    + State : string?
+    + ZipCode : string?
+    + Country : string?
+    + CreatedAt : DateTime
+    + UpadatedAt : DateTime
+}
+
+entity "Module" as Module {
+    + Id : Guid
+    + Name : string
+    + Description : string?
+    + CreatedAt : DateTime
+    + UpadatedAt : DateTime
+}
+
+entity "HeatingSystem" as HeatingSystem {
+    + Id : Guid
+    + IsOn : boolean
+    + TargetTemperature : double
+    + CurrentTemperature : double
+}
+
+entity "TemperatureSensor" as TemperatureSensor {
+    + Id : Guid
+    + CurrentTemperature : double
+    + LastUpdated : LocalDateTime
+}
+
+entity "TelemetryData" as TelemetryData {
+    + Id : Guid
+    + DeviceId : Guid
+    + Data : string
+    + CreatedAt : DateTime
+}
+
+' Define relationships using the notation
+House ||--o{ Device : "Contains"
+DeviceType ||--o{ Device : "Defines"
+Device ||--o{ TelemetryData : "Generates"
+Module ||--o{ Device : "Has"
+User ||--o{ House : "Owns"
+
+' Display settings
+skinparam entity {
+    BackgroundColor #E0E0E0
+    BorderColor #000000
+}
+skinparam rectangle {
+    BackgroundColor #FFFFFF
+}
+
+@enduml

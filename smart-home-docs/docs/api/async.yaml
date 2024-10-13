@@ -1,0 +1,146 @@
+asyncapi: 3.0.0
+info:
+  title: Smart Home Event Stream
+  version: 1.0.0
+  description: Event-driven communication for the Smart Home application.
+  tags:
+    - name: kafka
+      description: Kafka messaging
+servers:
+  development:
+    host: 'localhost:29092'
+    protocol: kafka
+    description: Development Kafka broker
+  production:
+    host: 'kafka:9092'
+    protocol: kafka
+    description: Development Kafka broker
+channels:
+  smart-home-commands-requests:
+    address: smart-home-commands-requests
+    messages:
+      call.message:
+        contentType: application/json
+        payload:
+          type: object
+          $ref: '#/components/schemas/DeviceMessage'
+      onCall.message:
+        contentType: application/json
+        payload:
+          type: object
+          $ref: '#/components/schemas/DeviceMessage'
+    description: Channel for rpc calls
+  smart-home-commands-responses:
+    address: smart-home-commands-responses
+    messages:
+      sendCommandMessage.message:
+        contentType: application/json
+        payload:
+          type: string
+          example: >-
+            The command was executed successfully. The target temperature is
+            25.0 degrees.
+      onSendCommandMessage.message:
+        contentType: application/json
+        payload:
+          type: string
+    description: Channel for rpc calls execution results
+  smart-home-telemetry-feed:
+    address: smart-home-telemetry-feed
+    messages:
+      sendTelemetryData.message:
+        contentType: application/json
+        payload:
+          type: string
+          example: >-
+            Passing telemetry data for device id 12. The target temperature is
+            25.0 degrees.
+      onTelemetryData.message:
+        contentType: application/json
+        payload:
+          type: string
+    description: Channel for telemetry data from a device
+    parameters:
+      deviceId:
+        description: ID of the device
+operations:
+  call:
+    action: receive
+    channel:
+      $ref: '#/channels/smart-home-commands-requests'
+    summary: Publish a command call
+    messages:
+      - $ref: '#/channels/smart-home-commands-requests/messages/call.message'
+  onCall:
+    action: send
+    channel:
+      $ref: '#/channels/smart-home-commands-requests'
+    summary: Subscribe to a command call
+    messages:
+      - $ref: '#/channels/smart-home-commands-requests/messages/onCall.message'
+  sendCommandMessage:
+    action: receive
+    channel:
+      $ref: '#/channels/smart-home-commands-responses'
+    summary: Publish a command result
+    messages:
+      - $ref: >-
+          #/channels/smart-home-commands-responses/messages/sendCommandMessage.message
+  onSendCommandMessage:
+    action: send
+    channel:
+      $ref: '#/channels/smart-home-commands-responses'
+    summary: Subscribe to a command result
+    messages:
+      - $ref: >-
+          #/channels/smart-home-commands-responses/messages/onSendCommandMessage.message
+  sendTelemetryData:
+    action: receive
+    channel:
+      $ref: '#/channels/smart-home-telemetry-feed'
+    summary: Publish telemetry data from a device
+    messages:
+      - $ref: >-
+          #/channels/smart-home-telemetry-feed/messages/sendTelemetryData.message
+  onTelemetryData:
+    action: send
+    channel:
+      $ref: '#/channels/smart-home-telemetry-feed'
+    summary: Subscribe to telemetry data from a device
+    messages:
+      - $ref: '#/channels/smart-home-telemetry-feed/messages/onTelemetryData.message'
+components:
+  schemas:
+    TelemetryData:
+      type: object
+      properties:
+        Id:
+          type: string
+        DeviceId:
+          type: string
+        Data:
+          type: string
+        CreatedAt:
+          type: string
+          format: date-time
+    DeviceMessage:
+      type: object
+      properties:
+        DeviceId:
+          type: string
+        Command:
+          $ref: '#/components/schemas/CommandType'
+        Payload:
+          type: string
+      example:
+        DeviceId: 7d85ad4b-9042-4f32-89c9-35f1c1949bba
+        CommandType: SetTemperature
+        Payload: '25.0'
+    CommandType:
+      type: string
+      description: The type of the command
+      enum:
+        - 'On'
+        - 'Off'
+        - SetTemperature
+      example: 'On'
