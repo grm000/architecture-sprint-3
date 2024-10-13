@@ -1,0 +1,47 @@
+@startuml C4_Domains
+!theme cerulean-outline
+!include <c4/C4_Container.puml>
+!include <c4/C4_Component.puml>
+
+title \n= Диаграмма доменов\n
+
+AddElementTag("subdomain", $shape=RoundedBoxShape(), $bgColor="lightSkyBlue", $fontColor="black")
+
+Enterprise_Boundary(smart_home_co, "Smart Home") {
+
+    System_Boundary(device_domain, "Domain: Devices") {
+        Container(plug_n_play, "Subdomain: Plug-n-Play\n Devices", "Spring Boot", "Handles standard devices", $tags="subdomain")
+        Container(device_integration, "Subdomain: Partner Devices", "Spring Boot", "Handles partner device integration", $tags="subdomain")
+    }
+
+    System_Boundary(temperature_domain, "Domain: Temperature") {
+        Container(temp_ctrl, "Subdomain:\n Heating Management", "Spring Boot", "Handles temperature control and heating management", $tags="subdomain")
+        Container(temp_mon, "Subdomain:\n Temperature Monitoring", "Spring Boot", "Handles temperature sensors reading", $tags="subdomain")
+    }
+
+    System_Boundary(lighting_domain, "Domain: Lighting") {
+        Container(light_ctrl, "Subdomain:\n Lighting Management", "Spring Boot", "Handles lighting control and management", $tags="subdomain")
+    }
+
+    System_Boundary(access_domain, "Domain: Access Control") {
+        Container(gate_ctrl, "Subdomain:\n Gate Management", "Spring Boot", "Handles gate control and management", $tags="subdomain")
+    }
+
+    System_Boundary(surveillance_domain, "Domain: Surveillance") {
+        Container(surveillance_ctrl, "Subdomain:\n Surveillance Management", "Spring Boot", "Handles video surveillance and monitoring", $tags="subdomain")
+    }
+
+    System_Boundary(customize_domain, "Domain: User Customization") {
+        Container(user_adjustment, "Subdomain:\n User Adjustment", "Spring Boot", "Handles devices custom settings", $tags="subdomain")
+    }
+
+    System_Boundary(telemetry_domain, "Domain: Telemetry") {
+        Container(device_tracking, "Subdomain:\n Device Tracking", "Spring Boot", "Handles telemetry data", $tags="subdomain")
+        Container(analytics, "Subdomain:\n Telemetry Analytics", "Spring Boot", "Handles report and analytics", $tags="subdomain")
+    }
+
+}
+
+
+footer drawn with PlantUML v. %version() and C4-PlantUML v. C4Version()
+@enduml
